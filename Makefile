@@ -21,8 +21,8 @@ fclean: clean
 
 re: fclean all
 
-test:
+test: fclean
 	$(CC) $(CFLAGS) -o $(NAME) $(SRCS)
-	./pipex testfile1.txt "ls sperme" "wc -l" testfile2.txt
+	./pipex testfile1.txt "grep bite" "wc -l" "wc -l" testfile2.txt
 
 .PHONY: all clean fclean re
