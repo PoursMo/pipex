@@ -58,6 +58,8 @@ void try_execve(char *path, char **argv, char **envp)
 	if(execve(path, argv, envp) == -1)
 	{
 		perror("execve");
+		free_split(argv);
+		free(path);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -83,14 +85,13 @@ void setup_file2(char *file)
 int main(int argc, char **argv)
 {
 	int pipe_fds[2];
-	
+
 	if(argc < 5)
 	{
 		ft_putstr_fd("Usage: ./pipex file1 cmd1... cmdn file2\n", STDERR_FILENO);
 		exit(EXIT_FAILURE);
 	}
 	setup_file1(argv[1]);
-
 	int i = 2;
 	while(i < argc - 2)
 	{
@@ -110,6 +111,6 @@ int main(int argc, char **argv)
 		i++;
 	}
 	setup_file2(argv[argc - 1]);
-	char **cmd = ft_split(argv[3], ' ');						//MALLOC
+	char **cmd = ft_split(argv[i], ' ');						//MALLOC
 	try_execve(ft_strjoin("/bin/", cmd[0]), cmd, NULL);			//MALLOC
 }

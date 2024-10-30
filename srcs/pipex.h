@@ -10,7 +10,7 @@
 
 //utils_split
 char	**ft_split(const char *str, char c);
-char	**free_split(char **split, int count);
+void	**free_split(char **split);
 
 //utils_strings_1
 size_t	ft_strlcpy(char *dst, const char *src, size_t size);

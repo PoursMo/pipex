@@ -37,7 +37,15 @@ static int	count_strs(const char *str, char c)
 	return (count);
 }
 
-char	**free_split(char **split, int count)
+void	**free_split(char **split)
+{
+	int i;
+	while (split[i])
+		free(split[i++]);
+	free(split);
+}
+
+static char	**free_err(char **split, int count)
 {
 	while (count--)
 		free(split[count]);
@@ -66,7 +74,7 @@ char	**ft_split(const char *str, char c)
 				size++;
 			split[i] = ft_strndup(str, size);
 			if (!split[i])
-				return (free_split(split, i));
+				return (free_err(split, i));
 			i++;
 			str += size;
 		}
