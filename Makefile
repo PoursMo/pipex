@@ -2,7 +2,7 @@ NAME = pipex
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 SRCSDIR = srcs
-SRCS = $(SRCSDIR)/*.c
+SRCS = $(addprefix $(SRCSDIR)/, pipex.c utils_strings_1.c utils_strings_2.c utils_split.c)
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
