@@ -37,9 +37,11 @@ static int	count_strs(const char *str, char c)
 	return (count);
 }
 
-void	**free_split(char **split)
+void	free_split(char **split)
 {
 	int i;
+
+	i = 0;
 	while (split[i])
 		free(split[i++]);
 	free(split);

@@ -21,8 +21,13 @@ fclean: clean
 
 re: fclean all
 
+TESTFILEIN = testfile1.txt
+TESTFILEOUT = testfile2.txt
+TESTARGS = $(TESTFILEIN) "cat" "wc -l" "wc -l" "cat" $(TESTFILEOUT)
+
 test: fclean
 	$(CC) $(CFLAGS) -o $(NAME) $(SRCS)
-	./pipex testfile1.txt "grep bite" "wc -l" "wc -l" testfile2.txt
+	./$(NAME) $(TESTARGS)
+	cat $(TESTFILEOUT)
 
 .PHONY: all clean fclean re

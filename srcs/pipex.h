@@ -5,12 +5,13 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdio.h>
+# include <sys/wait.h>
 
 # include <stdint.h>
 
 //utils_split
 char	**ft_split(const char *str, char c);
-void	**free_split(char **split);
+void	free_split(char **split);
 
 //utils_strings_1
 size_t	ft_strlcpy(char *dst, const char *src, size_t size);
