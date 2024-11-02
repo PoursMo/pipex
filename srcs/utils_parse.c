@@ -30,14 +30,22 @@ static int	count_strs(const char *str, char c)
 		if (*str && *str != c)
 		{
 			count++;
-			while (*str && *str != c)
+			if(*str && (*str == '\'' || *str == '\"'))
+			{
 				str++;
+				while (*str && *str != '\'' && *str != '\"')
+					str++;
+				str++;
+			}
+			else
+				while (*str && *str != c)
+					str++;
 		}
 	}
 	return (count);
 }
 
-void	free_split(char **split)
+void	free_str_arr(char **split)
 {
 	int i;
 
@@ -55,7 +63,7 @@ static char	**free_err(char **split, int count)
 	return (NULL);
 }
 
-char	**ft_split(const char *str, char c)
+char	**ft_parse(const char *str, char c)
 {
 	char	**split;
 	int		i;
@@ -72,9 +80,18 @@ char	**ft_split(const char *str, char c)
 		if (*str && *str != c)
 		{
 			size = 0;
-			while (*(str + size) && *(str + size) != c)
+			if(*str && (*str == '\'' || *str == '\"'))
+			{
 				size++;
-			split[i] = ft_strndup(str, size);
+				while (*(str + size) && *(str + size) != '\'' && *(str + size) != '\"')
+					size++;
+				size++;
+			}
+			else
+				while (*(str + size) && *(str + size) != c)
+					size++;
+			split[i] = ft_strtrim(ft_strndup(str, size), "\'\"");
+			free(ft_strndup(str, size));
 			if (!split[i])
 				return (free_err(split, i));
 			i++;

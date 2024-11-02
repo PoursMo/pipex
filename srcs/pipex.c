@@ -58,17 +58,17 @@ void	try_execve(char *path, char **argv, char **envp)
 	if (execve(path, argv, envp) == -1)
 	{
 		perror("execve");
-		free_split(argv);
-		free(path);
+		// free_str_arr(argv);
+		// free(path);
 		exit(EXIT_FAILURE);
 	}
 }
 
-void	try_wait(void)
+void	try_waitpid(pid_t pid, int *status, int options)
 {
-	if (wait(NULL) == -1)
+	if (waitpid(pid, status, options) == -1)
 	{
-		perror("wait");
+		perror("waitpid");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -101,12 +101,13 @@ void	setup_file2(char *file)
 	try_close(fd);
 }
 
-int	main(int argc, char **argv)
+int	main(int argc, char **argv, char **envp)
 {
 	int		pipe_fds[2];
 	int		pid;
 	int		i;
 	char	**cmd;
+	char *path;
 
 	if (argc < 5)
 	{
@@ -114,6 +115,7 @@ int	main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	setup_file1(argv[1]);
+	path = get_path(envp);
 	i = 2;
 	while (i < argc - 2)
 	{
@@ -124,16 +126,16 @@ int	main(int argc, char **argv)
 			try_close(pipe_fds[0]);
 			try_dup2(pipe_fds[1], STDOUT_FILENO);
 			try_close(pipe_fds[1]);
-			cmd = ft_split(argv[i], ' ');
-			try_execve(ft_strjoin("/bin/", cmd[0]), cmd, NULL);
+			cmd = ft_parse(argv[i], ' ');
+			try_execve(find_cmd_path(cmd[0], path), cmd, envp);
 		}
-		try_wait();
+		try_waitpid(pid, NULL, 0);
 		try_close(pipe_fds[1]);
 		try_dup2(pipe_fds[0], STDIN_FILENO);
 		try_close(pipe_fds[0]);
 		i++;
 	}
 	setup_file2(argv[argc - 1]);
-	cmd = ft_split(argv[i], ' ');
-	try_execve(ft_strjoin("/bin/", cmd[0]), cmd, NULL);
+	cmd = ft_parse(argv[i], ' ');
+	try_execve(find_cmd_path(cmd[0], path), cmd, envp);
 }

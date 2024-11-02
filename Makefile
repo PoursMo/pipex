@@ -1,33 +1,35 @@
 NAME = pipex
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -I libft
 SRCSDIR = srcs
-SRCS = $(addprefix $(SRCSDIR)/, pipex.c utils_strings_1.c utils_strings_2.c utils_split.c)
+SRCS = $(addprefix $(SRCSDIR)/, pipex.c utils_parse.c utils_path.c)
 OBJS = $(SRCS:.c=.o)
+LIB = libft/libft.a
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
+$(NAME): $(LIB) $(OBJS)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIB)
+
+$(LIB):
+	make -C libft
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
+	make -C libft clean
 	rm -f $(OBJS)
 
 fclean: clean
+	make -C libft fclean
 	rm -f $(NAME)
 
 re: fclean all
 
-TESTFILEIN = testfile1.txt
-TESTFILEOUT = testfile2.txt
-TESTARGS = $(TESTFILEIN) "cat" "wc -l" "wc -l" "cat" $(TESTFILEOUT)
+CMDS = "cat" "uniq" "sort"
 
-test: fclean
-	$(CC) $(CFLAGS) -o $(NAME) $(SRCS)
-	./$(NAME) $(TESTARGS)
-	cat $(TESTFILEOUT)
+test: all
+	./pipex testfile1.txt $(CMDS) testfile2.txt
 
 .PHONY: all clean fclean re
