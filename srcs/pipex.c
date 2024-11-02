@@ -127,6 +127,7 @@ int	main(int argc, char **argv, char **envp)
 			try_dup2(pipe_fds[1], STDOUT_FILENO);
 			try_close(pipe_fds[1]);
 			cmd = ft_parse(argv[i], ' ');
+			//cmd[0] already has the full path
 			try_execve(find_cmd_path(cmd[0], path), cmd, envp);
 		}
 		try_waitpid(pid, NULL, 0);
@@ -137,5 +138,6 @@ int	main(int argc, char **argv, char **envp)
 	}
 	setup_file2(argv[argc - 1]);
 	cmd = ft_parse(argv[i], ' ');
+	//cmd[0] already has the full path
 	try_execve(find_cmd_path(cmd[0], path), cmd, envp);
 }
