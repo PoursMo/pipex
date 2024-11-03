@@ -1,68 +1,6 @@
 #include "pipex.h"
 
-static char	*ft_strndup(const char *s, size_t n)
-{
-	char	*dup;
-	size_t	size;
-
-	if (!s)
-		return (NULL);
-	if (n > ft_strlen(s))
-		size = ft_strlen(s);
-	else
-		size = n;
-	dup = malloc(sizeof(char) * (size + 1));
-	if (!dup)
-		return (NULL);
-	ft_strlcpy(dup, s, size + 1);
-	return (dup);
-}
-
-static int	count_strs(const char *str, char c)
-{
-	int	count;
-
-	count = 0;
-	while (*str)
-	{
-		while (*str && *str == c)
-			str++;
-		if (*str && *str != c)
-		{
-			count++;
-			if(*str && *str == '\'')
-			{
-				str++;
-				while (*str && *str != '\'')
-					str++;
-				str++;
-			}
-			else if(*str && *str == '\"')
-			{
-				str++;
-				while (*str && *str != '\"')
-					str++;
-				str++;
-			}
-			else
-				while (*str && *str != c)
-					str++;
-		}
-	}
-	return (count);
-}
-
-void	free_str_arr(char **split)
-{
-	int i;
-
-	i = 0;
-	while (split[i])
-		free(split[i++]);
-	free(split);
-}
-
-static char	**free_err(char **split, int count)
+static char	**free_split(char **split, int count)
 {
 	while (count--)
 		free(split[count]);
@@ -70,51 +8,124 @@ static char	**free_err(char **split, int count)
 	return (NULL);
 }
 
-char	**ft_parse(const char *str, char c)
+int calculate_string_size(const char *str)
 {
-	char	**split;
-	int		i;
-	int		size;
+	int size = 0;
+	int in_double_quote = 0;
+	int in_single_quote = 0;
 
-	split = malloc(sizeof(char *) * (count_strs(str, c) + 1));
-	if (!split)
+	while (*str && (!ft_isspace(*str) || (ft_isspace(*str) && in_double_quote) || (ft_isspace(*str) && in_single_quote)))
+	{
+		if (*str == '"' && !in_single_quote)
+		{
+			str++;
+			in_double_quote = !in_double_quote;
+		}
+		else if (*str == '\'' && !in_double_quote)
+		{
+			str++;
+			in_single_quote = !in_single_quote;
+		}
+		else if (*str == '\\' && !in_single_quote)
+			str++;
+		else
+			size++;
+		str++;
+	}
+	return (size);
+}
+
+char *create_string(char **str)
+{
+	char *string;
+	int i;
+	int in_double_quote;
+	int in_single_quote;
+
+	string = malloc(sizeof(char) * (calculate_string_size(*str) + 1));
+	if (!string)
 		return (NULL);
 	i = 0;
-	while (*str)
+	in_double_quote = 0;
+	in_single_quote = 0;
+	while (**str && (!ft_isspace(**str) || (ft_isspace(**str) && in_double_quote) || (ft_isspace(**str) && in_single_quote)))
 	{
-		while (*str && *str == c)
-			str++;
-		if (*str && *str != c)
+		if(**str == '"' && !in_single_quote)
+			in_double_quote	= !in_double_quote;
+		else if(**str == '\'' && !in_double_quote)
+			in_single_quote = !in_single_quote;
+		else if(**str == '\\' && !in_single_quote)
 		{
-			size = 0;
-			if(*str && *str == '\'')
-			{
-				size++;
-				while (*(str + size) && *(str + size) != '\'')
-					size++;
-				size++;
-				split[i] = ft_strtrim(ft_strndup(str, size), "\'");
-			}
-			else if(*str && *str == '\"')
-			{
-				size++;
-				while (*(str + size) && *(str + size) != '\"')
-					size++;
-				size++;
-				split[i] = ft_strtrim(ft_strndup(str, size), "\"");
-			}
-			else
-			{
-				while (*(str + size) && *(str + size) != c)
-					size++;
-				split[i] = ft_strndup(str, size);
-			}
-			free(ft_strndup(str, size));
-			if (!split[i])
-				return (free_err(split, i));
+			(*str)++;
+			string[i] = **str;
 			i++;
-			str += size;
+		}
+		else
+		{
+			string[i] = **str;
+			i++;
+		}
+		(*str)++;
+	}
+	string[i] = '\0';
+	return (string);
+}
+
+int count_strings(const char *cmd)
+{
+	int count = 0;
+	int in_double_quote = 0;
+	int in_single_quote = 0;
+
+	while (*cmd)
+	{
+		while (*cmd && ft_isspace(*cmd))
+			cmd++;
+		if (*cmd && !ft_isspace(*cmd))
+		{
+			count++;
+			while (*cmd && (!ft_isspace(*cmd) || (ft_isspace(*cmd) && in_double_quote) || (ft_isspace(*cmd) && in_single_quote)))
+			{
+				if (*cmd == '"' && !in_single_quote)
+				{
+					cmd++;
+					in_double_quote = !in_double_quote;
+				}
+				else if (*cmd == '\'' && !in_double_quote)
+				{
+					cmd++;
+					in_single_quote = !in_single_quote;
+				}
+				else if (*cmd == '\\' && !in_single_quote)
+					cmd++;
+				cmd++;
+			}
 		}
 	}
-	return (split[i] = NULL, split);
+	return count;
+}
+
+char **parse_cmd(char *cmd)
+{
+	char **parse;
+	int i;
+
+	parse = malloc(sizeof(char *) * (count_strings(cmd) + 1));
+	if (!parse)
+		return (NULL);
+	i = 0;
+	while (*cmd)
+	{
+		while (*cmd && ft_isspace(*cmd))
+			cmd++;
+		if (*cmd && !ft_isspace(*cmd))
+		{
+			parse[i] = create_string(&cmd);
+			if (!parse[i])
+				return (free_split(parse, i));
+			i++;
+		}
+	}
+	parse[i] = NULL;
+	return (parse);
 }

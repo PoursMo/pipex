@@ -2,7 +2,7 @@ NAME = pipex
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -I libft
 SRCSDIR = srcs
-SRCS = $(addprefix $(SRCSDIR)/, pipex.c utils_parse.c utils_path.c)
+SRCS = $(addprefix $(SRCSDIR)/, pipex.c utils_parse.c utils_path.c utils_other.c utils_tries_1.c utils_tries_2.c)
 OBJS = $(SRCS:.c=.o)
 LIB = libft/libft.a
 
@@ -27,9 +27,12 @@ fclean: clean
 
 re: fclean all
 
-CMDS = "cat" "head -1"
+bonus: 
 
-test: all
-	./pipex testfile1.txt $(CMDS) testfile2.txt
+bonusclean:
+
+bonusfclean:
+
+bonusre:
 
 .PHONY: all clean fclean re

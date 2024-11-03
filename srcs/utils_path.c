@@ -21,7 +21,8 @@ char *get_path(char **envp)
 		i++;
 	}
 	ft_putstr_fd("PATH not found in envp\n", 2);
-	exit(EXIT_FAILURE);
+	return (NULL);
+	// exit(EXIT_FAILURE);
 }
 
 static char *make_cmd_path(char *cmd, char *dir)
@@ -51,6 +52,8 @@ char *find_cmd_path(char *cmd, char *path)
 	char	*full_path;
 	int		i;
 
+	if(!path)
+		return (NULL);
 	dirs = ft_split(path, ':');
 	if (!dirs)
 	{

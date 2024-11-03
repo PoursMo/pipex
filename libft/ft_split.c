@@ -50,7 +50,7 @@ static int	count_strs(const char *str, char c)
 	return (count);
 }
 
-char	**free_split(char **split, int count)
+static char	**free_split(char **split, int count)
 {
 	while (count--)
 		free(split[count]);
