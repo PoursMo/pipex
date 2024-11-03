@@ -75,6 +75,7 @@ char *find_cmd_path(char *cmd, char *path)
 		i++;
 	}
 	free_str_arr(dirs);
-	ft_putstr_fd("Command not found\n", 2);
-	exit(EXIT_FAILURE);
+	ft_putstr_fd(cmd, 2);
+	ft_putstr_fd(": command not found\n", 2);
+	exit(127);
 }

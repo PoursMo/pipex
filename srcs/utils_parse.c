@@ -30,10 +30,17 @@ static int	count_strs(const char *str, char c)
 		if (*str && *str != c)
 		{
 			count++;
-			if(*str && (*str == '\'' || *str == '\"'))
+			if(*str && *str == '\'')
 			{
 				str++;
-				while (*str && *str != '\'' && *str != '\"')
+				while (*str && *str != '\'')
+					str++;
+				str++;
+			}
+			else if(*str && *str == '\"')
+			{
+				str++;
+				while (*str && *str != '\"')
 					str++;
 				str++;
 			}
@@ -80,17 +87,28 @@ char	**ft_parse(const char *str, char c)
 		if (*str && *str != c)
 		{
 			size = 0;
-			if(*str && (*str == '\'' || *str == '\"'))
+			if(*str && *str == '\'')
 			{
 				size++;
-				while (*(str + size) && *(str + size) != '\'' && *(str + size) != '\"')
+				while (*(str + size) && *(str + size) != '\'')
 					size++;
 				size++;
+				split[i] = ft_strtrim(ft_strndup(str, size), "\'");
+			}
+			else if(*str && *str == '\"')
+			{
+				size++;
+				while (*(str + size) && *(str + size) != '\"')
+					size++;
+				size++;
+				split[i] = ft_strtrim(ft_strndup(str, size), "\"");
 			}
 			else
+			{
 				while (*(str + size) && *(str + size) != c)
 					size++;
-			split[i] = ft_strtrim(ft_strndup(str, size), "\'\"");
+				split[i] = ft_strndup(str, size);
+			}
 			free(ft_strndup(str, size));
 			if (!split[i])
 				return (free_err(split, i));

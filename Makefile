@@ -27,7 +27,7 @@ fclean: clean
 
 re: fclean all
 
-CMDS = "cat" "uniq" "sort"
+CMDS = "cat" "head -1"
 
 test: all
 	./pipex testfile1.txt $(CMDS) testfile2.txt

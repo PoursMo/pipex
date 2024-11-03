@@ -8,6 +8,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <sys/wait.h>
+# include <errno.h>
 
 //utils_parse
 char	**ft_parse(const char *str, char c);

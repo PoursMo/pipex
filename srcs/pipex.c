@@ -80,11 +80,15 @@ void	setup_file1(char *file)
 	if (access(file, R_OK) == -1)
 	{
 		perror("access");
-		exit(EXIT_FAILURE);
+		close(STDIN_FILENO);
+		// exit(EXIT_FAILURE);
 	}
-	fd = try_open(file, O_RDONLY, 0);
-	try_dup2(fd, STDIN_FILENO);
-	try_close(fd);
+	else
+	{
+		fd = try_open(file, O_RDONLY, 0);
+		try_dup2(fd, STDIN_FILENO);
+		try_close(fd);
+	}
 }
 
 void	setup_file2(char *file)
@@ -127,17 +131,19 @@ int	main(int argc, char **argv, char **envp)
 			try_dup2(pipe_fds[1], STDOUT_FILENO);
 			try_close(pipe_fds[1]);
 			cmd = ft_parse(argv[i], ' ');
-			//cmd[0] already has the full path
+			if(access(cmd[0], F_OK) == 0)
+				try_execve(cmd[0], cmd, envp);
 			try_execve(find_cmd_path(cmd[0], path), cmd, envp);
 		}
-		try_waitpid(pid, NULL, 0);
 		try_close(pipe_fds[1]);
 		try_dup2(pipe_fds[0], STDIN_FILENO);
 		try_close(pipe_fds[0]);
+		// try_waitpid(pid, NULL, 0);
 		i++;
 	}
-	setup_file2(argv[argc - 1]);
 	cmd = ft_parse(argv[i], ' ');
-	//cmd[0] already has the full path
+	setup_file2(argv[argc - 1]);
+	if(access(cmd[0], F_OK) == 0)
+		try_execve(cmd[0], cmd, envp);
 	try_execve(find_cmd_path(cmd[0], path), cmd, envp);
 }
