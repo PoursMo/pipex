@@ -65,12 +65,35 @@ void	pipex(int argc, char **argv, char **envp)
 	handle_pipes(argc, argv, envp, path);
 }
 
+void here_doc(int argc, char **argv)
+{
+	char *line;
+	size_t limiter_len;
+	int fds[2];
+
+	line = get_next_line(STDIN_FILENO);
+	limiter_len = ft_strlen(argv[2]);
+	try_pipe(fds);
+	while(line)
+	{
+		write(fds[1], line, ft_strlen(line));
+		if(ft_strncmp(line, argv[2], limiter_len) == 0)
+			break;
+		line = get_next_line(STDIN_FILENO);
+	}
+	setup_file2(argv[argc - 1]);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	if (argc < 5)
 	{
 		ft_putstr_fd("Usage: ./pipex file1 cmd1... cmdn file2\n", 2);
 		exit(EXIT_FAILURE);
+	}
+	if(ft_strncmp(argv[1], "here_doc", 8) == 0)
+	{
+		here_doc()
 	}
 	pipex(argc, argv, envp);
 }
