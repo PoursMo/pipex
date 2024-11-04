@@ -10,6 +10,14 @@
 # include <stdio.h>
 # include <sys/wait.h>
 
+//pipex
+void	pipex(int argc, char **argv, char **envp, char *path);
+void	setup_file1(char *file);
+void	setup_file2(char *file);
+
+//heredoc
+void	heredoc(int argc, char **argv, char **envp, char *path);
+
 //utils_parse
 char	**parse_cmd(char *cmd);
 
@@ -21,6 +29,7 @@ char	*find_cmd_path(char *cmd, char *path);
 void	free_str_arr(char **arr);
 int		ft_isspace(int c);
 void	execute_command(char *cmd, char **envp, char *path);
+void	handle_command(char *cmd, char **envp, char *path);
 
 //utils_tries_1
 int		try_open(char *file, int flags, mode_t mode);
