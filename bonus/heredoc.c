@@ -15,6 +15,7 @@ void heredoc(int argc, char **argv, char **envp, char *path)
 		free(line)
 		line = get_next_line(STDIN_FILENO);
 	}
+	free(line)
 	try_close(fds[1]);
 	try_dup2(fds[0], STDIN_FILENO);
 	try_close(fds[0]);
