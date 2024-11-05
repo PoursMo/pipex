@@ -12,6 +12,7 @@ void heredoc(int argc, char **argv, char **envp, char *path)
 		write(fds[1], line, ft_strlen(line));
 		if(ft_strncmp(line, argv[2], ft_strlen(line) - 1) == 0)
 			break;
+		free(line)
 		line = get_next_line(STDIN_FILENO);
 	}
 	try_close(fds[1]);
